@@ -1,0 +1,51 @@
+# Homework 
+# Author: Niklas Räuschl
+# 06.02.2019
+
+import random
+import json
+import datetime
+
+secret = random.randint(1, 10)
+guess = 0
+attempts = 0
+wrong_guesses = []
+
+current_time = datetime.datetime.now()
+#print(current_time)
+
+with open("score_list.txt", "r") as score_file:
+    score_list = json.loads(score_file.read())
+    #best_score = int(score_file.read())
+    #score_list.sort() # sortieren der liste nach aufsteigender folge
+    #print("Top Score: " + str(score_list[:3])) #nur die ersten drei scores werde ausgegeben
+    for score_dict in score_list:
+        print(str(score_dict["attempts"]) + " attempts to guess the Secret Number:"
+              + str(score_dict["secret"]) + ", date: " + score_dict.get("date") + " Player: "
+              + score_dict.get("Player") + "; Wrong Guesses: " + str(score_dict["Wrongs"]))
+
+name = str(input("Bitte gib deinen Spielernamen ein: "))
+
+while True:
+    guess = int(input("Bitte Zahl eingeben: "))
+    attempts += 1 #ist gleichbedeutend mit i = i+1
+
+    if guess == secret:
+        #score_list.append(attempts) #Zahl wird zusätzlich angehängt zur Liste
+        score_list.append({"attempts": attempts, "secret": secret, "date": str(datetime.datetime.now()), "Player": name, "Wrongs": wrong_guesses})
+        print("Gratuliere " + name + "! Du hast richtig geraten! Es ist " + str(guess) + "!!!")
+        print("Benötigte Versuche: " + str(attempts))
+        with open("score_list.txt", "w") as score_file:
+            score_file.write(json.dumps(score_list))
+        break
+
+    elif guess < secret:
+        print("Sorry " + str(guess) + " ist zu klein!")
+        wrong_guesses.append(guess)
+
+    elif guess > secret:
+        print("Sorry " + str(guess) + " ist zu groß!")
+        wrong_guesses.append(guess)
+
+    else:
+print("Bitte nochmal raten! Es war leider nicht " + str(guess))
